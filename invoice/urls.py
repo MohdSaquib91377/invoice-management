@@ -24,4 +24,6 @@ urlpatterns = [
          name='download_all_invoice'),
     path('view_invoice_detail/<int:pk>/',
          views.view_invoice_detail, name='view_invoice_detail'),
+     path('preview-invoice/<int:pk>/', views.preview_invoice, name='preview_invoice'),
+     path('download-invoice/<int:pk>/', views.download_invoice, name='download_invoice')
 ]

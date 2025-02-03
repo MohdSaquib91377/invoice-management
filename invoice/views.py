@@ -6,6 +6,9 @@ from utils.filehandler import handle_file_upload
 from .forms import *
 from .models import *
 import pandas as pd
+from weasyprint import HTML
+from django.template.loader import render_to_string
+
 
 # Create your views here.
 
@@ -54,19 +57,20 @@ def download_all(request):
 
     }
     for curr in allInvoiceDetails:
-        invoice = Invoice.objects.get(id=curr.invoice_id)
-        product = Product.objects.get(id=curr.product_id)
-        invoiceAndProduct["invoice_id"].append(invoice.id)
-        invoiceAndProduct["invoice_date"].append(invoice.date)
-        invoiceAndProduct["invoice_customer"].append(invoice.customer)
-        invoiceAndProduct["invoice_contact"].append(invoice.contact)
-        invoiceAndProduct["invoice_email"].append(invoice.email)
-        invoiceAndProduct["invoice_comments"].append(invoice.comments)
-        invoiceAndProduct["product_name"].append(product.product_name)
-        invoiceAndProduct["product_price"].append(product.product_price)
-        invoiceAndProduct["product_unit"].append(product.product_unit)
-        invoiceAndProduct["product_amount"].append(curr.amount)
-        invoiceAndProduct["invoice_total"].append(invoice.total)
+        invoice = Invoice.objects.filter(id=curr.invoice_id).first()
+        product = Product.objects.filter(id=curr.product_id).first()
+        if invoice is not None:
+            invoiceAndProduct["invoice_id"].append(invoice.id)
+            invoiceAndProduct["invoice_date"].append(invoice.date)
+            invoiceAndProduct["invoice_customer"].append(invoice.customer)
+            invoiceAndProduct["invoice_contact"].append(invoice.contact)
+            invoiceAndProduct["invoice_email"].append(invoice.email)
+            invoiceAndProduct["invoice_comments"].append(invoice.comments)
+            invoiceAndProduct["product_name"].append(product.product_name)
+            invoiceAndProduct["product_price"].append(product.product_price)
+            invoiceAndProduct["product_unit"].append(product.product_unit)
+            invoiceAndProduct["product_amount"].append(curr.amount)
+            invoiceAndProduct["invoice_total"].append(invoice.total)
 
     df = pd.DataFrame(invoiceAndProduct)
     df.to_excel("static/excel/allInvoices.xlsx", index=False)
@@ -134,16 +138,28 @@ def create_product(request):
     }
 
     return render(request, "invoice/create_product.html", context)
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def view_product(request):
     total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
-
     product = Product.objects.filter(product_is_delete=False)
-    print(product)
+    page_num = request.GET.get('page', 1)
+
+    paginator = Paginator(product, 6) # 6 employees per page
+
+
+    try:
+        product = paginator.page(page_num)
+    except PageNotAnInteger:
+        # if page is not an integer, deliver the first page
+        product = paginator.page(1)
+    except EmptyPage:
+        # if the page is out of range, deliver the last page
+        product = paginator.page(paginator.num_pages)
+
     context = {
         "total_product": total_product,
         # "total_customer": total_customer,
@@ -151,6 +167,7 @@ def view_product(request):
         "total_income": total_income,
         "product": product,
     }
+    
 
     return render(request, "invoice/view_product.html", context)
 
@@ -171,7 +188,7 @@ def view_product(request):
 
 #     context = {
 #         "total_product": total_product,
-#         "total_customer": total_customer,
+#         "total_customer": total_customer,dwon
 #         "total_invoice": total_invoice,
 #         "customer": customer,
 #     }
@@ -417,3 +434,30 @@ def delete_product(request, pk):
     }
 
     return render(request, "invoice/delete_product.html", context)
+
+
+def preview_invoice(request, pk):
+    invoice = Invoice.objects.get(id=pk)
+    invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
+    return render(request, "invoice/preview_invoice.html", {"invoice_detail":invoice_detail,})
+
+
+def download_invoice(request, pk):
+    template_path = 'invoice/preview_invoice.html'
+    
+    invoice = Invoice.objects.get(id=pk)
+    invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
+    
+    context = {'invoice_detail': invoice_detail}
+    
+    # Render the template to HTML
+    html = render_to_string(template_path, context, request=request)
+
+    # Generate the PDF
+    pdf = HTML(string=html).write_pdf()
+
+    # Create response with PDF as attachment
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="invoice.pdf"'
+
+    return response

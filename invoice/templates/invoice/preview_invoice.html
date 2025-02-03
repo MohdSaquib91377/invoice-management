@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: sans-serif; /* Use a standard font */
+            margin: 20px; /* Add some margin to the page */
+        }
+        .container {
+            max-width: 800px; /* Set a maximum width for the content */
+            margin: 0 auto; /* Center the content horizontally */
+            border: 1px solid #ddd; /* Add a border around the invoice */
+            padding: 20px; /* Add padding inside the container */
+            box-sizing: border-box; /* Include padding in width calculation */
+            height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-height: 45px;
+        }
+        .header p {
+            margin: 5px 0;
+            font-weight: 700;
+        }
+        .info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            background: #f0f3f8;
+            padding: 15px;
+            border-radius: 3px;
+        }
+        .info h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .info strong {
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        th {
+            background-color: #f0f3f8;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .total {
+            text-align: right;
+            margin: 15px 0;
+        }
+        .total p {
+            margin: 5px 0;
+            font-size: 14px;
+            background: #425dac;
+            color: white;
+            padding: 8px 15px;
+            display: inline-block;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+        .total p strong {
+            font-weight: 700;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: gray;
+            border-top: 1px solid #eee;
+            font-weight: 600;
+            margin-top: 20px; /* Add some space above the footer */
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">  {% load static %}
+        <div class="header">
+            <img src="{% static 'img/company.png' %}" alt="Brand Logo">
+            <div>
+                <p><strong>Date:</strong> April 26, 2023</p>
+                <p><strong>Invoice #:</strong> BRA-00335</p>
+            </div>
+        </div>
+
+        <div class="info">
+            <div>
+                <h4>Everest Cap pvt ltd</h4>
+                <strong>Number : 23456789 </strong> <br>
+                <strong>6622 Abshire Mills, Port Orlofurt, 05820<br>
+                    United States</strong>
+            </div>
+            <div>
+                <h4>Customer Info</h4>
+                <strong>Number : 23456789 </strong> <br>
+                <strong>6622 Abshire Mills, Port Orlofurt, 05820<br>
+                    United States</strong>
+            </div>
+        </div>
+
+        <table>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Qty.</th>
+                <th>Total</th>
+            </tr>
+            {% for i in invoice_detail %}
+            <tr>
+                <td>{{i.id}}</td>
+                <td>{{i.product}}</td>
+                <td>{{i.product.product_price}}</td>
+                <td>{{i.amount}}</td>
+                <td>{{i.get_total_bill}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="total">
+            <p>Total: <strong>384.00</strong></p>
+        </div>
+
+        <div class="footer">
+            Everest Cap pvt ltd | everestcap@gmail.com | +191-90-90-90
+        </div>
+    </div> </body>
+</html>

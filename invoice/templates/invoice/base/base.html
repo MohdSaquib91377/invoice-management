@@ -101,7 +101,7 @@
                         <a class="collapse-item" href="{% url 'create_invoice' %}">Add</a>
                         <a class="collapse-item" href="{% url 'view_invoice' %}">View</a>
                         <a class="collapse-item" href="{% url 'download_all_invoice' %}">Download</a>
-                        <a class="collapse-item" href="{% url 'delete_all_invoice' %}">Delete</a>
+                        <!-- <a class="collapse-item" href="{% url 'delete_all_invoice' %}">Delete</a> -->
 
                     </div>
                 </div>
@@ -216,7 +216,7 @@
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{total_income}}</div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                            <span style="font-size: 2rem; color: gray;">₹</span>
                                         </div>
                                     </div>
                                 </div>

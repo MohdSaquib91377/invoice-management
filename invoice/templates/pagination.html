@@ -1,0 +1,13 @@
+<div>
+    <span>
+      {% if product.has_previous %}
+        <a href="?page={{ product.previous_page_number }}">Previous</a>
+      {% endif %}
+      <span>
+        Page {{ product.number }} of {{ product.paginator.num_pages }}.
+      </span>
+      {% if product.has_next %}
+        <a href="?page={{ product.next_page_number }}">Next</a>
+      {% endif %}
+    </span>
+  </div>
