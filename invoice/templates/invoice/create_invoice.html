@@ -5,17 +5,18 @@
         {% csrf_token %}
         <div class="mb-3 mt-5">
             <label class="form-label">Customer Name</label>
-            <input type="text" name="customer" class="form-control" placeholder="Enter name of the customer" pattern="^[A-Za-z\s]+$" required oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')">
+            <input value="{{invoice.customer}}" type="text" name="customer" class="form-control" placeholder="Enter name of the customer" pattern="^[A-Za-z\s]+$" required oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')">
 
         </div>
         <div class="mb-3">
             <label class="form-label">Contact</label>
-            <input type="text" name="contact" class="form-control" placeholder="Enter contact of the customer" pattern="^\d{10}$" maxlength="10" required oninput="this.value = this.value.replace(/\D/g, '')">
+            <input value="{{invoice.contact}}" type="text" name="contact" class="form-control" placeholder="Enter contact of the customer" pattern="^\d{10}$" maxlength="10" required oninput="this.value = this.value.replace(/\D/g, '')">
         </div>
         <div class="mb-3">
             <label class="form-label">Comments</label>
-            <input type="text" name="comments" class="form-control" placeholder="Enter comments">
+            <input value="{{invoice.comments}}" type="text" name="comments" class="form-control" placeholder="Enter comments">
         </div>
+        <input type="hidden" name="id" value="{{invoice.id}}">
 
         <!-- Product Table -->
         <div class="table-responsive">
@@ -29,20 +30,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for invoice_details in invoice.invoicedetail_set.all%}
                     <tr>
                         <td>
-                            <input type="text" name="product[]" class="form-control" placeholder="Enter product name" required>
+                            <input value="{{invoice_details.product}}" type="text" name="product[]" class="form-control" placeholder="Enter product name" required>
                         </td>
                         <td>
-                            <input type="number" name="amount[]" class="form-control amount-field" placeholder="Enter amount" required>
+                            <input value="{{invoice_details.product_price}}" type="number" name="amount[]" class="form-control amount-field" placeholder="Enter amount" required>
                         </td>
                         <td>
-                            <input type="number" name="quantity[]" class="form-control quantity-field" placeholder="Enter quantity" required>
+                            <input value="{{invoice_details.amount}}" type="number" name="quantity[]" class="form-control quantity-field" placeholder="Enter quantity" required>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger remove-row">X</button>
                         </td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

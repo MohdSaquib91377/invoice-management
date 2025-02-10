@@ -220,60 +220,88 @@ from django.shortcuts import render, redirect
 from .models import Invoice, InvoiceDetail
 
 def create_invoice(request):
-     # total_customer = Customer.objects.count()
+    invoice = None
+    invoice_details = None
+    invoice_id = request.GET.get("id")  # Get invoice ID from URL
+
+    if invoice_id:
+        try:
+            invoice = Invoice.objects.get(id=invoice_id)
+            invoice_details = InvoiceDetail.objects.filter(invoice=invoice)
+        except Invoice.DoesNotExist:
+            return redirect("create_invoice")  # Redirect if invoice not found
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
-    invoice = Invoice.objects.all()
-
     context = {
-        # "total_customer": total_customer,
         "total_invoice": total_invoice,
         "total_income": total_income,
-        "invoice": invoice,
+        "invoice": invoice,  # Pass invoice object for editing
+        "invoice_details": invoice_details,  # Pass details to populate form
     }
     if request.method == "POST":
         customer = request.POST.get("customer")
         contact = request.POST.get("contact")
         comments = request.POST.get("comments")
-        
-        # Create an invoice instance
-        invoice = Invoice.objects.create(
-            customer=customer,
-            contact=contact,
-            comments=comments,
-            total=0  # Initialize total to 0
-        )
-        
-        total = 0  # Variable to store total invoice amount
+
+        # TODO: while update read input hidden field
+        invoice_id = request.POST.get("id")  # Works only if included in form submission
+        if invoice_id:
+            try:
+                invoice = Invoice.objects.get(id=invoice_id)
+                invoice_details = InvoiceDetail.objects.filter(invoice=invoice)
+            except Invoice.DoesNotExist:
+                return redirect("create_invoice") 
+            
+        if invoice:
+            # Update existing invoice
+            invoice.customer = customer
+            invoice.contact = contact
+            invoice.comments = comments
+            invoice.total = 0  # Reset total before recalculating
+            invoice.save()
+
+            # Delete old details before adding new ones
+            InvoiceDetail.objects.filter(invoice=invoice).delete()
+        else:
+            # Create new invoice
+            invoice = Invoice.objects.create(
+                customer=customer,
+                contact=contact,
+                comments=comments,
+                total=0  # Initialize total
+            )
+
+        total = 0
         products = request.POST.getlist("product[]")
         amounts = request.POST.getlist("amount[]")
         quantities = request.POST.getlist("quantity[]")
-        
+
         for product_name, amount, quantity in zip(products, amounts, quantities):
             try:
                 amount = float(amount)
                 quantity = int(quantity)
                 subtotal = amount * quantity
                 total += subtotal
-                
-                # Save invoice details
+
+                # Save new invoice details
                 InvoiceDetail.objects.create(
                     invoice=invoice,
-                    product=product_name,  # Storing manually entered product name
-                    product_price=amount,  # Storing manually entered product price
-                    amount=quantity,  # Storing manually entered quantity
+                    product=product_name,
+                    product_price=amount,
+                    amount=quantity,
                 )
             except ValueError:
                 continue  # Skip invalid data
-        
+
         # Update total amount in invoice
         invoice.total = total
         invoice.save()
-        
+
         return redirect("view_invoice")
-    
-    return render(request, "invoice/create_invoice.html",context)
+
+    return render(request, "invoice/create_invoice.html", context)
 
 def view_invoice(request):
     # total_customer = Customer.objects.count()
