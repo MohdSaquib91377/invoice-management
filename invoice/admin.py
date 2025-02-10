@@ -13,7 +13,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class InvoiceDetailAdmin(admin.ModelAdmin):
-    list_display = ['id', 'invoice', 'product', 'amount']
+    list_display = ['id', 'invoice', 'product', 'amount','product_price']
 
 
 class InvoiceAdmin(admin.ModelAdmin):

@@ -24,7 +24,14 @@
 
     <!-- FontAwesome Icons -->
     <script src="{% static 'https://kit.fontawesome.com/d0715debc1.js' %}" crossorigin="anonymous"></script>
+    <style>
+        .custom-navbar {
+    height: 5%; /* Reduce height to 50% of the original */
+    min-height: 40px; /* Ensure it doesn't shrink too much */
+    padding: 5px 10px; /* Adjust padding to match the reduced height */
+}
 
+    </style>
 </head>
 
 <body id="page-top">
@@ -100,7 +107,7 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{% url 'create_invoice' %}">Add</a>
                         <a class="collapse-item" href="{% url 'view_invoice' %}">View</a>
-                        <a class="collapse-item" href="{% url 'download_all_invoice' %}">Download</a>
+                        <!-- <a class="collapse-item" href="{% url 'download_all_invoice' %}">Download</a> -->
                         <!-- <a class="collapse-item" href="{% url 'delete_all_invoice' %}">Delete</a> -->
 
                     </div>
@@ -132,12 +139,15 @@
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <nav class="navbar  custom-navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
+                  
                 </nav>
+                
+                
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->

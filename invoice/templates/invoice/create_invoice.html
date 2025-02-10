@@ -1,89 +1,89 @@
 {% extends "invoice/base/base.html" %}
-<!-- Content Row -->
 {% block content %}
-<div class="row">
-    <!-- Area Chart -->
-    <div class="col-xl-12 col-lg-7">
-        <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <label class="m-0 font-weight-bold text-primary">Create invoice</label>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <form method="post" action="">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label class="form-label" for="invoice_customer">Customer name</label>
-                        {{form.customer}}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="invoice_contact">Contact</label>
-                        {{form.contact}}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="invoice_comments">Comments</label>
-                        {{form.comments}}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label" for="invoice_email">Email</label>
-                        {{form.email}}
-                    </div>
-                    
-                    {{ formset.management_form }}
-                    {% for form in formset %}
-                    <div class="table">
-                        <table class="table">
-                            <tr>
-                                <td style="border: 0; padding: 0 0.5em 0 0; width: 80%">
-                                    <label class="form-label" for="invoice_detail_product">Product name</label>
-                                    {{form.product}}
-                                </td>
-                                <td style="border: 0; padding: 0 0 0 0.5em;">
-                                    <label class="form-label" for="invoice_detail_amount">Amounts</label>
-                                    {{form.amount}}
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    {% endfor %}
-                    <div class="mb-3 d-flex justify-content-center">
-                        <input class="btn btn-outline-warning add-form-row" style="margin: 0 1em 0 1em; width: 40%"
-                            type="button" value="Add more product" id="add_more">
-                        <input class="btn btn-outline-success" style="margin: 0 1em 0 1em; width: 40%" type="submit"
-                            name="create-invoice">
-                    </div>
-                </form>
-            </div>
+<div class="container card shadow">
+    <form action="{% url 'create_invoice' %}" method="POST">
+        {% csrf_token %}
+        <div class="mb-3 mt-5">
+            <label class="form-label">Customer Name</label>
+            <input type="text" name="customer" class="form-control" placeholder="Enter name of the customer" pattern="^[A-Za-z\s]+$" required oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')">
+
         </div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Contact</label>
+            <input type="text" name="contact" class="form-control" placeholder="Enter contact of the customer" pattern="^\d{10}$" maxlength="10" required oninput="this.value = this.value.replace(/\D/g, '')">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Comments</label>
+            <input type="text" name="comments" class="form-control" placeholder="Enter comments">
+        </div>
+
+        <!-- Product Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered" id="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Amount</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" name="product[]" class="form-control" placeholder="Enter product name" required>
+                        </td>
+                        <td>
+                            <input type="number" name="amount[]" class="form-control amount-field" placeholder="Enter amount" required>
+                        </td>
+                        <td>
+                            <input type="number" name="quantity[]" class="form-control quantity-field" placeholder="Enter quantity" required>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger remove-row">X</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Buttons -->
+        <div class="mb-3 d-flex justify-content-center">
+            <button type="button" class="btn btn-outline-warning mx-2 w-50" id="add_more">Add more product</button>
+            <input class="btn btn-outline-success mx-2 w-50" type="submit" name="create-invoice" value="Submit">
+        </div>
+    </form>
 </div>
 
 {% endblock %}
 
 {% block custom_js %}
 <script>
-    function cloneMore(selector, type) {
-        var newElement = $(selector).clone(true);
-        var total = $('#id_' + type + '-TOTAL_FORMS').val();
-        newElement.find(':input').each(function () {
-            var name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
-            var id = 'id_' + name;
-            $(this).attr({ 'name': name, 'id': id }).val('').removeAttr('checked');
-        });
-        newElement.find('label').each(function () {
-            var newFor = $(this).attr('for').replace('-' + (total - 1) + '-', '-' + total + '-');
-            $(this).attr('for', newFor);
-        });
-        total++;
-        $('#id_' + type + '-TOTAL_FORMS').val(total);
-        $(selector).after(newElement);
-    }
+    document.getElementById("add_more").addEventListener("click", function() {
+        let tableBody = document.querySelector("#invoice-table tbody");
+        let newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="product[]" class="form-control" placeholder="Enter product name" required>
+            </td>
+            <td>
+                <input type="number" name="amount[]" class="form-control amount-field" placeholder="Enter amount" required>
+            </td>
+            <td>
+                <input type="number" name="quantity[]" class="form-control quantity-field" placeholder="Enter quantity" required>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger remove-row">X</button>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+    });
 
-    $('#add_more').click(function () {
-        cloneMore('div.table:last', 'form');
+    // Remove row when "X" button is clicked
+    document.addEventListener("click", function(e) {
+        if (e.target.classList.contains("remove-row")) {
+            e.target.closest("tr").remove();
+        }
     });
 </script>
 {% endblock %}

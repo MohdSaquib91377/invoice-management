@@ -3,7 +3,6 @@ from django.shortcuts import render, redirect
 
 from utils.filehandler import handle_file_upload
 
-from .forms import *
 from .models import *
 import pandas as pd
 from weasyprint import HTML
@@ -214,64 +213,69 @@ def view_product(request):
 
 
 # Invoice view
+from django.shortcuts import render, redirect
+from .models import Invoice, InvoiceDetail, Product
+
+from django.shortcuts import render, redirect
+from .models import Invoice, InvoiceDetail
+
 def create_invoice(request):
-    total_product = Product.objects.count()
-    # total_customer = Customer.objects.count()
+     # total_customer = Customer.objects.count()
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
-    form = InvoiceForm()
-    formset = InvoiceDetailFormSet()
-    if request.method == "POST":
-        form = InvoiceForm(request.POST)
-        formset = InvoiceDetailFormSet(request.POST)
-        if form.is_valid():
-            invoice = Invoice.objects.create(
-                customer=form.cleaned_data.get("customer"),
-                contact=form.cleaned_data.get("contact"),
-                email=form.cleaned_data.get("email"),
-                date=form.cleaned_data.get("date"),
-            )
-        if formset.is_valid():
-            total = 0
-            for form in formset:
-                product = form.cleaned_data.get("product")
-                amount = form.cleaned_data.get("amount")
-                if product and amount:
-                    # Sum each row
-                    sum = float(product.product_price) * float(amount)
-                    # Sum of total invoice
-                    total += sum
-                    InvoiceDetail(
-                        invoice=invoice, product=product, amount=amount
-                    ).save()
-            # Pointing the customer
-            # points = 0
-            # if total > 1000:
-            #     points += total / 1000
-            # invoice.customer.customer_points = round(points)
-            # # Save the points to Customer table
-            # invoice.customer.save()
-
-            # Save the invoice
-            invoice.total = total
-            invoice.save()
-            return redirect("view_invoice")
+    invoice = Invoice.objects.all()
 
     context = {
-        "total_product": total_product,
         # "total_customer": total_customer,
         "total_invoice": total_invoice,
         "total_income": total_income,
-        "form": form,
-        "formset": formset,
+        "invoice": invoice,
     }
-
-    return render(request, "invoice/create_invoice.html", context)
-
+    if request.method == "POST":
+        customer = request.POST.get("customer")
+        contact = request.POST.get("contact")
+        comments = request.POST.get("comments")
+        
+        # Create an invoice instance
+        invoice = Invoice.objects.create(
+            customer=customer,
+            contact=contact,
+            comments=comments,
+            total=0  # Initialize total to 0
+        )
+        
+        total = 0  # Variable to store total invoice amount
+        products = request.POST.getlist("product[]")
+        amounts = request.POST.getlist("amount[]")
+        quantities = request.POST.getlist("quantity[]")
+        
+        for product_name, amount, quantity in zip(products, amounts, quantities):
+            try:
+                amount = float(amount)
+                quantity = int(quantity)
+                subtotal = amount * quantity
+                total += subtotal
+                
+                # Save invoice details
+                InvoiceDetail.objects.create(
+                    invoice=invoice,
+                    product=product_name,  # Storing manually entered product name
+                    product_price=amount,  # Storing manually entered product price
+                    amount=quantity,  # Storing manually entered quantity
+                )
+            except ValueError:
+                continue  # Skip invalid data
+        
+        # Update total amount in invoice
+        invoice.total = total
+        invoice.save()
+        
+        return redirect("view_invoice")
+    
+    return render(request, "invoice/create_invoice.html",context)
 
 def view_invoice(request):
-    total_product = Product.objects.count()
     # total_customer = Customer.objects.count()
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
@@ -279,7 +283,6 @@ def view_invoice(request):
     invoice = Invoice.objects.all()
 
     context = {
-        "total_product": total_product,
         # "total_customer": total_customer,
         "total_invoice": total_invoice,
         "total_income": total_income,

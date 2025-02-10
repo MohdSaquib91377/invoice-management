@@ -1,76 +1,86 @@
 {% extends "invoice/base/base.html" %}
-<!-- Content Row -->
 {% block content %}
-<div class="row">
-    <!-- Area Chart -->
-    <div class="col-xl-12 col-lg-7">
-        <div class="card shadow mb-4">
-            <!-- Card Header - Dropdown -->
-            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <label class="m-0 font-weight-bold text-primary">Products</label>
-            </div>
-            <!-- Card Body -->
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Total</th>
-                            <th>Detail</th>
-                            <th>Preview</th>
-                            <th>Download</th>
-                            <th>Delete</th>
 
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for i in invoice %}
-                        <tr>
-                            <td style="padding: 0.45em;">
-                                {{i.id}}
-                            </td>
-                            <td style="padding: 0.45em;">
-                                {{i.date}}
-                            </td>
-                            <td style="padding: 0.45em;">
-                                {{i.customer}}
-                            </td>
-                            <td style="padding: 0.45em;">
-                                {{i.total}}
-                            </td>
-                            <td style="padding: 0;">
-                                <a href="{% url 'view_invoice_detail' i.id %}" class="btn btn-outline-primary"
-                                   style="width: 100%; height: 100%; border-radius: 0">
-                                    <i class="fas fa-long-arrow-alt-right"></i>
-                                </a>
-                            </td>
-                            
-                            <td style="padding: 0;">
-                                <a href="{% url 'preview_invoice' i.id %}" class="btn btn-outline-danger"
-                                   style="width: 100%; height: 100%; border-radius: 0">
-                                   <i class="fas fa-eye"></i> 
-                                </a>
-                            </td>
-                            <td style="padding: 0;">
-                                <a href="{% url 'download_invoice' i.id %}" class="btn btn-outline-success"
-                                   style="width: 100%; height: 100%; border-radius: 0">
-                                   <i class="fas fa-download"></i> 
-                                </a>
-                            </td>
-                            <td style="padding: 0;">
-                                <a href="{% url 'delete_invoice' i.id %}" class="btn btn-outline-danger"
-                                   style="width: 100%; height: 100%; border-radius: 0">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-                            </td>
-                            
-                            
-                        {% endfor %}
-                        </tbody>
-                    </table>
+<div class=" h-100 w-100"> <!-- Full-width container -->
+    <div class="row h-100">
+        <div class="col-xl-12 col-lg-12 h-100">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <label class="m-0 font-weight-bold text-primary">Products</label>
+                </div>
+                <nav class="navbar navbar-expand w-100 shadow bg-white" >
+                    <!-- Search Box (Left Side) -->
+                    <div class="mr-auto">
+                        <form class="form-inline d-none d-sm-inline-block my-2 my-md-0 mw-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control border border-primary shadow-sm small rounded" placeholder="Search..." aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <!-- Add button if needed -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                
+                    <!-- Start Date & End Date (Right Side) -->
+                    <div class="d-flex align-items-center ml-auto">
+                        <input type="date" class="form-control mr-2" id="start-date">
+                        <input type="date" class="form-control" id="end-date">
+                    </div>
+                </nav>
+                <div class="card-body h-100"> <!-- Ensuring full height -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Detail</th>
+                                    <th>Preview</th>
+                                    <th>Download</th>
+                                    <th>Delete</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in invoice %}
+                                <tr>
+                                    <td style="padding: 0.45em;">{{ i.id }}</td>
+                                    <td style="padding: 0.45em;">{{ i.date }}</td>
+                                    <td style="padding: 0.45em;">{{ i.customer }}</td>
+                                    <td style="padding: 0.45em;">{{ i.total }}</td>
+                                    <td style="padding: 0;">
+                                        <a href="{% url 'view_invoice_detail' i.id %}" class="btn btn-outline-primary w-100 h-100">
+                                            <i class="fas fa-long-arrow-alt-right"></i>
+                                        </a>
+                                    </td>
+                                    <td style="padding: 0;">
+                                        <a href="{% url 'preview_invoice' i.id %}" class="btn btn-outline-danger w-100 h-100">
+                                            <i class="fas fa-eye"></i> 
+                                        </a>
+                                    </td>
+                                    <td style="padding: 0;">
+                                        <a href="{% url 'download_invoice' i.id %}" class="btn btn-outline-success w-100 h-100">
+                                            <i class="fas fa-download"></i> 
+                                        </a>
+                                    </td>
+                                    <td style="padding: 0;">
+                                        <a href="{% url 'delete_invoice' i.id %}" class="btn btn-outline-danger w-100 h-100">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                    <td style="padding: 0;">
+                                        <a href="{% url 'create_invoice' %}?id={{i.id}}" class="btn btn-outline-primary w-100 h-100">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
