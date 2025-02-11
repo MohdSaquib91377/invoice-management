@@ -9,7 +9,10 @@ from weasyprint import HTML
 from django.template.loader import render_to_string
 from django.db.models import Q
 
-
+from django.shortcuts import render
+from django.db.models import Q
+from datetime import datetime
+from .models import Invoice
 # Create your views here.
 
 
@@ -301,15 +304,13 @@ def create_invoice(request):
         invoice.save()
 
         return redirect("view_invoice")
+    
 
     return render(request, "invoice/create_invoice.html", context)
 
 
 
-from django.shortcuts import render
-from django.db.models import Q
-from datetime import datetime
-from .models import Invoice
+
 
 def view_invoice(request):
     search_query = request.GET.get('search', '').strip()  # Get search input
@@ -337,12 +338,25 @@ def view_invoice(request):
         end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
         invoices = invoices.filter(date__lte=end_date)
 
+   
+    page_num = request.GET.get('page', 1)
+
+    paginator = Paginator(invoices, 30) # 6 employees per page
+
+
+    try:
+        invoices = paginator.page(page_num)
+    except PageNotAnInteger:
+        # if page is not an integer, deliver the first page
+        invoices = paginator.page(1)
+    except EmptyPage:
+        # if the page is out of range, deliver the last page
+        invoices = paginator.page(paginator.num_pages)
     context = {
         "total_invoice": total_invoice,
         "total_income": total_income,
         "invoice": invoices,
     }
-
     return render(request, "invoice/view_invoice.html", context)
 
 

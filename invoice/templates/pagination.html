@@ -1,13 +1,47 @@
-<div>
-    <span>
-      {% if product.has_previous %}
-        <a href="?page={{ product.previous_page_number }}">Previous</a>
-      {% endif %}
-      <span>
-        Page {{ product.number }} of {{ product.paginator.num_pages }}.
-      </span>
-      {% if product.has_next %}
-        <a href="?page={{ product.next_page_number }}">Next</a>
-      {% endif %}
-    </span>
-  </div>
+<div class="pagination-container">
+  {% if invoice.has_previous %}
+      <a href="?page={{ invoice.previous_page_number }}" class="pagination-link">Previous</a>
+  {% endif %}
+  <span class="pagination-text">
+      Page {{ invoice.number }} of {{ invoice.paginator.num_pages }}.
+  </span>
+  {% if invoice.has_next %}
+      <a href="?page={{ invoice.next_page_number }}" class="pagination-link">Next</a>
+  {% endif %}
+</div>
+
+<style>
+.pagination-container {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.5); /* More transparent */
+  backdrop-filter: blur(5px); /* Subtle blur effect */
+  padding: 10px 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Softer shadow */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-link {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.pagination-link:hover {
+  background: rgba(0, 123, 255, 0.1);
+  color: #0056b3;
+}
+
+.pagination-text {
+  font-weight: bold;
+  color: #333; /* Ensures readability */
+}
+</style>
