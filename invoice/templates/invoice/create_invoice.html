@@ -5,12 +5,12 @@
         {% csrf_token %}
         <div class="mb-3 mt-5">
             <label class="form-label">Customer Name</label>
-            <input value="{{invoice.customer}}" type="text" name="customer" class="form-control" placeholder="Enter name of the customer" pattern="^[A-Za-z\s]+$" required oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')">
+            <input value="{{invoice.customer}}" type="text" name="customer" class="form-control" placeholder="Enter name of the customer" pattern="^[A-Za-z\s]+$"  oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')">
 
         </div>
         <div class="mb-3">
             <label class="form-label">Contact</label>
-            <input value="{{invoice.contact}}" type="text" name="contact" class="form-control" placeholder="Enter contact of the customer" pattern="^\d{10}$" maxlength="10" required oninput="this.value = this.value.replace(/\D/g, '')">
+            <input value="{{invoice.contact}}" type="text" name="contact" class="form-control" placeholder="Enter contact of the customer" pattern="^\d{10}$" maxlength="10"  oninput="this.value = this.value.replace(/\D/g, '')">
         </div>
         <div class="mb-3">
             <label class="form-label">Comments</label>
