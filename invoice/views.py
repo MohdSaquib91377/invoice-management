@@ -304,25 +304,43 @@ def create_invoice(request):
 
     return render(request, "invoice/create_invoice.html", context)
 
+
+
+from django.shortcuts import render
+from django.db.models import Q
+from datetime import datetime
+from .models import Invoice
+
 def view_invoice(request):
     search_query = request.GET.get('search', '').strip()  # Get search input
+    start_date = request.GET.get('start_date', '').strip()  # Get start date input
+    end_date = request.GET.get('end_date', '').strip()  # Get end date input
 
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
+    invoices = Invoice.objects.all()
+
+    # Apply search filter
     if search_query:
-        invoice = Invoice.objects.filter(
+        invoices = invoices.filter(
             Q(customer__icontains=search_query) | 
-            Q(total__icontains=search_query)  # Reverse lookup
+            Q(total__icontains=search_query)
         ).distinct()
-        
-    else:
-        invoice = Invoice.objects.all()
+
+    # Apply date range filter
+    if start_date:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        invoices = invoices.filter(date__gte=start_date)
+
+    if end_date:
+        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        invoices = invoices.filter(date__lte=end_date)
 
     context = {
         "total_invoice": total_invoice,
         "total_income": total_income,
-        "invoice": invoice,
+        "invoice": invoices,
     }
 
     return render(request, "invoice/view_invoice.html", context)
