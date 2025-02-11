@@ -26,10 +26,23 @@
                     
 
                     <!-- Start Date & End Date (Right Side) -->
-                    <div class="d-flex align-items-center ml-auto">
-                        <input type="date" class="form-control mr-2" id="start-date">
-                        <input type="date" class="form-control" id="end-date">
-                    </div>
+                    <form class="d-flex align-items-center ml-auto">
+                        <div class="input-group">
+                            <input type="date" class="form-control" name="start_date" id="start-date" value="{{ today|date:'Y-m-d' }}">
+                            <div class="input-group-text bg-white border-0 px-2">To</div> 
+                            <input type="date" class="form-control" name="end_date" id="end-date" value="{{ today|date:'Y-m-d' }}">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter"></i> <!-- FontAwesome Filter Icon -->
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    
+                    
+                    
+                    
                 </nav>
 
                 <div class="card-body">
