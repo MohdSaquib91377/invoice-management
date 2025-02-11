@@ -7,6 +7,7 @@ from .models import *
 import pandas as pd
 from weasyprint import HTML
 from django.template.loader import render_to_string
+from django.db.models import Q
 
 
 # Create your views here.
@@ -304,14 +305,21 @@ def create_invoice(request):
     return render(request, "invoice/create_invoice.html", context)
 
 def view_invoice(request):
-    # total_customer = Customer.objects.count()
+    search_query = request.GET.get('search', '').strip()  # Get search input
+
     total_invoice = Invoice.objects.count()
     total_income = getTotalIncome()
 
-    invoice = Invoice.objects.all()
+    if search_query:
+        invoice = Invoice.objects.filter(
+            Q(customer__icontains=search_query) | 
+            Q(total__icontains=search_query)  # Reverse lookup
+        ).distinct()
+        
+    else:
+        invoice = Invoice.objects.all()
 
     context = {
-        # "total_customer": total_customer,
         "total_invoice": total_invoice,
         "total_income": total_income,
         "invoice": invoice,

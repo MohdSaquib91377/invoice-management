@@ -36,7 +36,9 @@
                             <input value="{{invoice_details.product}}" type="text" name="product[]" class="form-control" placeholder="Enter product name" required>
                         </td>
                         <td>
-                            <input value="{{invoice_details.product_price}}" type="number" name="amount[]" class="form-control amount-field" placeholder="Enter amount" required>
+
+<input value="{{ invoice_details.product_price }}" type="number" name="amount[]" class="form-control amount-field" 
+       placeholder="Enter amount" step="any" required>
                         </td>
                         <td>
                             <input value="{{invoice_details.amount}}" type="number" name="quantity[]" class="form-control quantity-field" placeholder="Enter quantity" required>
