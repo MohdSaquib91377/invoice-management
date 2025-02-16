@@ -99,25 +99,27 @@
 <body>
     <div class="container">  {% load static %}
         <div class="header">
-            <img src="{% static 'img/company.png' %}" alt="Brand Logo">
+            <!-- <img src="{% static 'img/company.png' %}" alt="Brand Logo"> -->
+           <span><strong>Everest Cap</strong></span>
             <div>
-                <p><strong>Date:</strong> April 26, 2023</p>
-                <p><strong>Invoice #:</strong> BRA-00335</p>
+                <p><strong>Date:</strong>{{invoice.date}}</p>
+                <p><strong>Invoice #:</strong> {{invoice.id}}</p>
             </div>
         </div>
 
         <div class="info">
             <div>
                 <h4>Everest Cap pvt ltd</h4>
-                <strong>Number : 23456789 </strong> <br>
-                <strong>6622 Abshire Mills, Port Orlofurt, 05820<br>
-                    United States</strong>
+           
+                <strong>Number : 9324338304,7208558583,7977158816 </strong> <br>
+                <strong>98/100 V.V CHANDAN STREET. MASJID,<br> WHOLESALE DEALERS OF SOCS-GLOVES-WINTER CAPS<br>
+                    </strong>
             </div>
             <div>
                 <h4>Customer Info</h4>
-                <strong>Number : 23456789 </strong> <br>
-                <strong>6622 Abshire Mills, Port Orlofurt, 05820<br>
-                    United States</strong>
+                <strong>Name : {{invoice_detail.invoice.customer}} </strong> <br>
+                <strong>Number : {{invoice_detail.invoice.contact}} </strong> <br>
+                
             </div>
         </div>
 
@@ -141,7 +143,7 @@
         </table>
 
         <div class="total">
-            <p>Total: <strong></strong></p>
+            <p>Total: <strong></strong>{{totalIncome}}</p>
         </div>
 
         <div class="footer">

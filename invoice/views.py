@@ -510,7 +510,11 @@ def delete_product(request, pk):
 def preview_invoice(request, pk):
     invoice = Invoice.objects.get(id=pk)
     invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
-    return render(request, "invoice/preview_invoice.html", {"invoice_detail":invoice_detail,})
+    totalIncome = 0
+    for curr in invoice_detail:
+        totalIncome += float(curr.product_price) * float(curr.amount)
+    
+    return render(request, "invoice/preview_invoice.html", {"invoice_detail":invoice_detail,"totalIncome":totalIncome,"invoice":invoice})
 
 
 def download_invoice(request, pk):
@@ -518,8 +522,10 @@ def download_invoice(request, pk):
     
     invoice = Invoice.objects.get(id=pk)
     invoice_detail = InvoiceDetail.objects.filter(invoice=invoice)
-    
-    context = {'invoice_detail': invoice_detail}
+    totalIncome = 0
+    for curr in invoice_detail:
+        totalIncome += float(curr.product_price) * float(curr.amount)
+    context={"invoice_detail":invoice_detail,"totalIncome":totalIncome,"invoice":invoice}
     
     # Render the template to HTML
     html = render_to_string(template_path, context, request=request)
